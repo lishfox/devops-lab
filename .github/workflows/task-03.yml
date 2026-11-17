@@ -1,0 +1,54 @@
+# Задача 03. Уведомление о падении
+# Условие: tasks/03-status.md
+# Менять можно только job "notify". Jobs "build" и "check" (🔒) не трогай.
+name: "task-03: status"
+
+on:
+  push:
+    paths: [.github/workflows/task-03.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # 🔒 Сборка, которая всегда падает. Не менять.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Building..."
+          exit 1
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    outputs:
+      message: ${{ steps.mail.outputs.message }}
+    steps:
+      - name: Compose email
+        id: mail
+        run: |
+          echo "message=build: ${{ job.status }}" >> "$GITHUB_OUTPUT"
+
+  # 🔒 Проверка. Не менять.
+  check:
+    needs: [build, notify]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check
+        env:
+          NOTIFY: ${{ needs.notify.result }}
+          MESSAGE: ${{ needs.notify.outputs.message }}
+        run: |
+          echo "notify=$NOTIFY message='$MESSAGE'"
+          if [ "$NOTIFY" != "success" ]; then
+            echo "::error::Job notify не выполнился (result=$NOTIFY)"
+            exit 1
+          fi
+          if [ "$MESSAGE" != "build: failure" ]; then
+            echo "::error::Письмо говорит '$MESSAGE', а сборка упала"
+            exit 1
+          fi
+          echo "✅ Письмо ушло и говорит правду"

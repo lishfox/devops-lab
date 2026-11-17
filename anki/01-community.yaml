@@ -1,0 +1,38 @@
+# Правило: id не менять никогда (на нём держится прогресс в Anki).
+
+- id: dco-sign-off
+  tags: [git, meshery]
+  front: Что делает `git commit -s` и зачем он в Meshery?
+  back: |
+    Добавляет строку `Signed-off-by: Имя <email>` (DCO).
+    Без неё проверка DCO в PR красная, PR не смёржат.
+
+- id: dco-fix-last
+  tags: [git]
+  front: Забыл `-s` в последнем коммите, PR уже открыт. Как починить?
+  back: |
+    ```
+    git commit --amend -s --no-edit
+    git push --force-with-lease
+    ```
+
+- id: meshery-order
+  tags: [meshery]
+  front: Порядок вклада в Meshery (3 шага)
+  back: |
+    1. Issue (проверить дубли).
+    2. Попросить назначить.
+    3. PR.
+
+- id: meshery-secrets-rule
+  tags: [meshery, security]
+  front: Workflow трогает токены или секреты. Кто выбирает подход?
+  back: Мейнтейнер. До его решения код не писать.
+
+- id: meshery-release-flow
+  tags: [meshery, release]
+  front: Откуда в Meshery берётся стабильный релиз?
+  back: |
+    Release Drafter держит черновик релиза.
+    Публикация черновика создаёт тег `v*`, тег запускает стабильную сборку.
+    Тег и заметки руками не пишут.

@@ -1,0 +1,60 @@
+# Правило: id не менять никогда (на нём держится прогресс в Anki).
+
+- id: gha-hierarchy
+  tags: [gha]
+  front: GitHub Actions — что во что вложено?
+  back: |
+    **workflow** (файл в `.github/workflows/`) → **jobs** → **steps**.
+    Каждый job — отдельная машина (runner). Steps одного job делят файлы.
+
+- id: gha-dispatch
+  tags: [gha]
+  front: Как сделать, чтобы workflow можно было запустить кнопкой?
+  back: |
+    ```
+    on:
+      workflow_dispatch:
+    ```
+    В Meshery это обязательно для каждого workflow.
+
+- id: gha-needs
+  tags: [gha]
+  front: Что даёт `needs:` у job? (2 вещи)
+  back: |
+    1. Порядок: job ждёт указанные.
+    2. Доступ к их результатам: `needs.<job>.result`, `needs.<job>.outputs.<имя>`.
+
+- id: gha-step-output
+  tags: [gha]
+  front: Как шаг отдаёт значение следующим шагам?
+  back: |
+    ```
+    - id: s
+      run: echo "name=value" >> "$GITHUB_OUTPUT"
+    ```
+    Читать: `${{ steps.s.outputs.name }}`
+
+- id: gha-job-output
+  tags: [gha]
+  front: Как передать значение из одного job в другой?
+  back: |
+    В job-источнике:
+    ```
+    outputs:
+      x: ${{ steps.s.outputs.name }}
+    ```
+    В job-получателе (`needs: источник`): `${{ needs.источник.outputs.x }}`
+
+- id: gha-permissions
+  tags: [gha, security]
+  front: Зачем блок `permissions:` в workflow?
+  back: |
+    Урезает права `GITHUB_TOKEN` до нужного минимума.
+    Стандарт Meshery: свой блок у каждого job.
+
+- id: gha-actionlint
+  tags: [gha, tools]
+  front: Что такое `actionlint` и какое у него известное ложное срабатывание в Meshery?
+  back: |
+    Линтер workflow: ловит ошибки до запуска.
+    Не знает метку раннера `ubuntu-slim` — это не баг Meshery.

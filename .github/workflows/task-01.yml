@@ -1,0 +1,53 @@
+# Задача 01. Условие в if:
+# Условие: tasks/01-if.md
+# Менять можно только job "task". Job "check" (🔒) не трогай.
+name: "task-01: if"
+
+on:
+  push:
+    paths: [.github/workflows/task-01.yml]
+  workflow_dispatch:
+    inputs:
+      greet:
+        description: "Run the greet step"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  task:
+    runs-on: ubuntu-latest
+    outputs:
+      ran: ${{ steps.greet.outputs.ran }}
+    steps:
+      - name: Greet
+        id: greet
+        if: ${{ inputs.greet }} == true
+        run: |
+          echo "Hello!"
+          echo "ran=yes" >> "$GITHUB_OUTPUT"
+
+  # 🔒 Проверка. Не менять.
+  check:
+    needs: task
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check
+        env:
+          EVENT: ${{ github.event_name }}
+          GREET: ${{ inputs.greet }}
+          RAN: ${{ needs.task.outputs.ran }}
+        run: |
+          echo "event=$EVENT greet=$GREET ran=$RAN"
+          if [ "$EVENT" = "workflow_dispatch" ] && [ "$GREET" = "true" ]; then
+            expected="yes"
+          else
+            expected=""
+          fi
+          if [ "$RAN" != "$expected" ]; then
+            echo "::error::Шаг Greet: ожидалось ran='$expected', получилось ran='$RAN'"
+            exit 1
+          fi
+          echo "✅ Верно для этого запуска ($EVENT, greet=$GREET)"

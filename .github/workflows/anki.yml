@@ -1,0 +1,44 @@
+# Собирает колоду AnkiDroid из anki/*.yaml и кладёт в релиз "anki".
+# Скачать: https://github.com/lishfox/devops-lab/releases/download/anki/devops.apkg
+name: anki
+
+on:
+  push:
+    branches: [main]
+    paths: [anki/**, scripts/build_deck.py, .github/workflows/anki.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anki
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload the deck to the release
+    steps:
+      - name: Context
+        run: echo "ref=${{ github.ref }} sha=${{ github.sha }} actor=${{ github.actor }}"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install genanki==0.13.1 pyyaml==6.0.3
+
+      - run: python scripts/build_deck.py
+
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view anki >/dev/null 2>&1 || \
+            gh release create anki --title "Anki deck" --latest=false \
+              --notes "Колода для AnkiDroid. Скачай devops.apkg и открой в AnkiDroid."
+          gh release upload anki dist/devops.apkg --clobber
