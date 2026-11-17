@@ -57,7 +57,9 @@
   front: Что такое `actionlint` и какое у него известное ложное срабатывание в Meshery?
   back: |
     Линтер workflow: ловит ошибки до запуска.
-    Не знает метку раннера `ubuntu-slim` — это не баг Meshery. - id: gha-if
+    Не знает метку раннера `ubuntu-slim` — это не баг Meshery.
+
+- id: gha-if
   tags:[gha]
   front: |
     Что подставится в `run:` вместо ${{steps.greet.outputs.greet}} == true?
