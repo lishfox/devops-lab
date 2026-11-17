@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Greet
         id: greet
-        if: ${{ inputs.greet }} == true
+        if: ${{ inputs.greet == true}}
         run: |
           echo "Hello!"
           echo "ran=yes" >> "$GITHUB_OUTPUT"
