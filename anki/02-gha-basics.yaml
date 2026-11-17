@@ -60,6 +60,5 @@
     Не знает метку раннера `ubuntu-slim` — это не баг Meshery. - id: gha-if
   tags:[gha]
   front: |
-    Что подставится в `run:` вместо ${{steps.greet.outputs.greet}} == true
-  back:|
-    == true
+    Что подставится в `run:` вместо ${{steps.greet.outputs.greet}} == true?
+  back: == true
