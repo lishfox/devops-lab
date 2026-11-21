@@ -62,5 +62,5 @@
 - id: gha-if
   tags: [gha]
   front: |
-    Что подставится в `run:` вместо ${{steps.greet.outputs.greet}} == true?
-  back: == true
+    Строка if: ${{ inputs.greet }} == true, ниже «Запуск без галочки». Выполнится ли шаг?
+  back: Да, выполнится при любом состоянии. Т.к. полученную строку `== true` всегда воспринимает как true.
